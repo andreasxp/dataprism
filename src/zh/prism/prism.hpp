@@ -41,10 +41,10 @@ public:
 	// The inheritance diagram for the prism family looks like this:
 	//
 	//        cfprism
-	//        /     \
+	//        |     |
 	//    cprism   fprism   
-	//        \
-	//         prism
+	//        |
+	//      prism
 	//
 	// To enable casting prism to fprism without implementing virtual bases,
 	// the following implicit cast is added.

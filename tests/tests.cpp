@@ -1,8 +1,10 @@
-#include <gtest/gtest.h>
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+
 #include <vector>
 #include <type_traits>
 
-#include "prism.hpp"
+#include <doctest/doctest.h>
+#include <zh/prism.hpp>
 
 #include "traverse.hpp"
 
@@ -12,7 +14,7 @@ using zh::cprism;
 using zh::fprism;
 using zh::cfprism;
 
-TEST(dataprism_nop_test, prism) {
+TEST_CASE("Unit.nop.prism") {
 	using cont = prism<base, base::iterator, base::const_iterator>;
 
 	base data = {1, 2, 3, 4, 5};
@@ -26,7 +28,7 @@ TEST(dataprism_nop_test, prism) {
 	crtraverse_and_compare(data, prismed);
 }
 
-TEST(dataprism_nop_test, cprism) {
+TEST_CASE("Unit.nop.cprism") {
 	using cont = cprism<base, base::const_iterator>;
 
 	base data = {1, 2, 3, 4, 5};
@@ -40,7 +42,7 @@ TEST(dataprism_nop_test, cprism) {
 	crtraverse_and_compare(data, prismed);
 }
 
-TEST(dataprism_nop_test, fprism) {
+TEST_CASE("Unit.nop.fprism") {
 	using cont = fprism<base, base::iterator, base::const_iterator>;
 
 	base data = {1, 2, 3, 4, 5};
@@ -54,7 +56,7 @@ TEST(dataprism_nop_test, fprism) {
 	//crtraverse_and_compare(data, prismed);
 }
 
-TEST(dataprism_nop_test, cfprism) {
+TEST_CASE("Unit.nop.cfprism") {
 	using cont = cfprism<base, base::const_iterator>;
 
 	base data = {1, 2, 3, 4, 5};
@@ -66,12 +68,4 @@ TEST(dataprism_nop_test, cfprism) {
 	ctraverse_and_compare(data, prismed);
 	//rtraverse_and_compare(data, prismed);
 	//crtraverse_and_compare(data, prismed);
-}
-
-int main() {
-	testing::InitGoogleTest();
-	int result = RUN_ALL_TESTS();
-
-	system("PAUSE");
-	return result;
 }

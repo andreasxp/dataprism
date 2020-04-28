@@ -10,10 +10,10 @@ constexpr prism<C, It, CIt, RIt, CRIt, IArgs>::operator fprism<C, It, CIt>&() no
 	// The inheritance diagram for the prism family looks like this:
 	//
 	//        cfprism
-	//        /     \
+	//        |     |
 	//    cprism   fprism   
-	//        \
-	//         prism
+	//        |
+	//       prism
 	//
 	// Since only cfprism contains data members, we can use reinterpret_cast
 	// to safely cast prism to fprism.
