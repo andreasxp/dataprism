@@ -6,7 +6,7 @@ namespace zh {
 
 template <
 	class C,
-	class CIt,
+	class CIt, 
 	class IArgs = std::tuple<>> // Additional args to construct an iterator with
 class cfprism : private IArgs {
 private:

@@ -17,6 +17,9 @@ set_warnings(TREAT_AS_ERRORS)
 set(target_name ${PROJECT_NAME})
 set(namespace zh)
 
+option(${PROJECT_NAME}_BUILD_TESTS "Build project tests." OFF)
+#option(${PROJECT_NAME}_BUILD_EXAMPLES "Build project examples." OFF)
+
 # Dependencies
 # find_package(...)
 
@@ -28,24 +31,17 @@ file(GLOB_RECURSE sources RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/src" CONFIGURE_D
 # Target
 add_library(${target_name} INTERFACE)
 add_library(${namespace}::${target_name} ALIAS ${target_name})
-
 foreach(source ${sources})
 	target_sources(${target_name} INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/${source}>)
 	target_sources(${target_name} INTERFACE $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include/${source}>)
 endforeach()
-
 target_compile_features(${target_name} INTERFACE cxx_std_17)
-
 target_include_directories(${target_name}
 	INTERFACE
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
 		$<INSTALL_INTERFACE:include>
 )
-
-target_link_libraries(${target_name}
-	INTERFACE
-		zh::type_traits
-)
+target_link_libraries(${target_name} INTERFACE zh::type_traits)
 
 # Installation
 install_targets(${target_name})
@@ -58,20 +54,28 @@ install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src"
 configure_and_install(${CMAKE_SCRIPTS_ROOT}/simple-config.cmake.in ${namespace} SameMajorVersion)
 
 # Examples =============================================================================================================
-#add_executable(example)
-#target_sources(example PRIVATE "examples/example.cpp")
-#target_link_libraries(example PRIVATE ${namespace}::${target_name})
+#[[if(${PROJECT_NAME}_BUILD_EXAMPLES)
+	message(STATUS "Building ${PROJECT_NAME} examples")
+
+	add_executable(${target_name}_example)
+	target_sources(${target_name}_example PRIVATE "examples/example.cpp")
+	target_link_libraries(${target_name}_example PRIVATE ${namespace}::${target_name})
+endif()]]
 
 # Tests ================================================================================================================
-file(GLOB_RECURSE sources CONFIGURE_DEPENDS
-	"tests/*.cpp"
-)
+if(${PROJECT_NAME}_BUILD_TESTS)
+	message(STATUS "Building ${PROJECT_NAME} tests")
 
-add_executable(${target_name}_tests)
-target_sources(${target_name}_tests PRIVATE ${sources})
+	file(GLOB_RECURSE sources CONFIGURE_DEPENDS
+		"tests/*.cpp"
+	)
 
-target_link_libraries(${target_name}_tests
-    PRIVATE
-		${namespace}::${target_name}
-        CONAN_PKG::doctest
-)
+	add_executable(${target_name}_tests)
+	target_sources(${target_name}_tests PRIVATE ${sources})
+
+	target_link_libraries(${target_name}_tests
+		PRIVATE
+			${namespace}::${target_name}
+			CONAN_PKG::doctest
+	)
+endif()
