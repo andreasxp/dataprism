@@ -11,7 +11,7 @@ def get_project_version():
     except Exception:
         return None
 
-		
+
 def get_project_name():
     try:
         content = tools.load("CMakeLists.txt")
@@ -27,7 +27,9 @@ class Project(ConanFile):
     version = get_project_version()
 
     settings = "os", "compiler", "build_type", "arch"
-    requires = ["doctest/2.3.7"]
+    requires = [
+        "type_traits/0.1.0@andreasxp/stable"
+    ]
 
     options = {
         "tests": [True, False],
@@ -49,11 +51,7 @@ class Project(ConanFile):
     
     generators = "cmake"
 
-    def imports(self):
-        self.copy("*.dll", "", "bin")
-        self.copy("*.dylib", "", "lib")
-
-    def build(self):
+    def _configure_cmake(self):
         cmake = CMake(self, generator="Ninja")
         cmake.definitions["CMAKE_EXPORT_COMPILE_COMMANDS"] = True
 
@@ -61,6 +59,21 @@ class Project(ConanFile):
             cmake.definitions[self.name + "_BUILD_TESTS"] = True
         if self.options.examples:
             cmake.definitions[self.name + "_BUILD_EXAMPLES"] = True
-
+        
         cmake.configure()
+        return cmake
+
+    def build(self):
+        cmake = self._configure_cmake()
         cmake.build()
+        
+    def build_requirements(self):
+        if self.options.tests:
+            self.build_requires("doctest/2.3.7")
+
+    def package(self):
+        cmake = self._configure_cmake()
+        cmake.install()
+
+    def package_id(self):
+        self.info.header_only()
